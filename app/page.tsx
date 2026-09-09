@@ -5,7 +5,7 @@ import { ArrowRight, Check, ChevronRight, CircleHelp, Flag, Mail, MapPin, Rotate
 import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
-import { destinations, flightDistance, flightPoint, groundPoint, outcome, windFor, windLabel, type Mode } from '@/lib/flight';
+import { destinations, flightAngle, flightDistance, flightPoint, groundPoint, outcome, windFor, windLabel, type Mode } from '@/lib/flight';
 
 type Result = { stretch: number; wind: number; distance: number; verdict: ReturnType<typeof outcome> };
 export default function Home() {
@@ -23,6 +23,11 @@ export default function Home() {
   const flightLock = useRef(false);
   const frame = useRef(0);
   const activeDistance = useRef(0);
+  const townImg = useRef<HTMLImageElement | null>(null);
+  // A browser-cached image can finish loading before this effect attaches the
+  // onLoad handler below, so onLoad never fires and the town stays stuck on
+  // "まちをひらいているよ…" forever. Catch that case on mount.
+  useEffect(() => { if (townImg.current?.complete && townImg.current.naturalWidth > 0) setImageReady(true); }, []);
   const target = destinations[delivery % 3];
   const wind = windFor(mode, delivery);
   const success = result?.verdict === 'success';
@@ -114,7 +119,7 @@ export default function Home() {
       <div className="play-layout">
         <section className={`town-section ${success ? 'celebrating' : ''}`} aria-label="紙ひこうきが飛ぶ、どうぶつのまち">
           <div className="town-world">
-            <img className="town-art" src="./town.png" alt="斜め上から見た、木々と小川に囲まれた立体的などうぶつのまち" draggable={false} onLoad={() => setImageReady(true)} onError={() => setImageError(true)}/>
+            <img ref={townImg} className="town-art" src="./town.png" alt="斜め上から見た、木々と小川に囲まれた立体的などうぶつのまち" draggable={false} onLoad={() => setImageReady(true)} onError={() => setImageError(true)}/>
             {!imageReady && <div className="image-status">{imageError ? <>まちをひらけませんでした。<button onClick={() => window.location.reload()}>もう一度ひらく</button></> : 'まちをひらいているよ…'}</div>}
             <div className="wind-card"><span className="wind-icon"><Wind size={25}/></span><div><span className="mini-label">いまの風</span><strong>{windLabel(wind)}</strong></div><span className={`wind-direction ${wind < 0 ? 'reverse' : ''}`}>{wind === 0 ? '—' : <ArrowRight size={25}/>}</span></div>
             <span className="town-name"><span/> こもれびタウン</span>
@@ -134,7 +139,7 @@ export default function Home() {
             <div className="launch-label" style={{ left: '18%', top: '85%' }}><Mail size={15}/>ここから</div>
             {previous && <div className="previous-marker" style={{ left: `${groundPoint(previous.distance).x}%`, top: `${groundPoint(previous.distance).y}%` }}><span/>前の着地点</div>}
             <div className="plane-shadow" style={{ left: `${ground.x}%`, top: `${ground.y}%`, opacity: flying ? .19 : .3, transform: `translate(-50%,-50%) scale(${flying ? .8 : 1})` }}/>
-            <div className={`paper-plane ${flying ? 'airborne' : ''} ${success ? 'landed-success' : ''}`} style={{ left: `${plane.x}%`, top: `${plane.y}%`, transform: `translate(-50%, -50%) rotate(${flying ? -8 + progress * 17 : 8}deg) scale(${flying ? 1.15 : 1})` }}><Send aria-hidden="true" strokeWidth={1.3} fill="#fffdf4" color="#3d7b84"/></div>
+            <div className={`paper-plane ${flying ? 'airborne' : ''} ${success ? 'landed-success' : ''}`} style={{ left: `${plane.x}%`, top: `${plane.y}%`, transform: `translate(-50%, -50%) rotate(${flying ? flightAngle(currentDistance, progress) : 8}deg) scale(${flying ? 1.15 : 1})` }}><Send aria-hidden="true" strokeWidth={1.3} fill="#fffdf4" color="#3d7b84"/></div>
             {success && <div className="delivery-bubble" style={{ left: `${targetPoint.x}%`, top: `${targetPoint.y - 17}%` }}><Mail size={19}/>とどいた！<Sparkles size={18}/></div>}
             <div className="map-caption"><span className="map-dot"/>黄色のわっかが、手紙をとどける場所だよ。</div>
           </div>
