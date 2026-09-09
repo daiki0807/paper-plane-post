@@ -114,7 +114,7 @@ export default function Home() {
       <div className="play-layout">
         <section className={`town-section ${success ? 'celebrating' : ''}`} aria-label="紙ひこうきが飛ぶ、どうぶつのまち">
           <div className="town-world">
-            <img className="town-art" src="/town.png" alt="斜め上から見た、木々と小川に囲まれた立体的などうぶつのまち" draggable={false} onLoad={() => setImageReady(true)} onError={() => setImageError(true)}/>
+            <img className="town-art" src="./town.png" alt="斜め上から見た、木々と小川に囲まれた立体的などうぶつのまち" draggable={false} onLoad={() => setImageReady(true)} onError={() => setImageError(true)}/>
             {!imageReady && <div className="image-status">{imageError ? <>まちをひらけませんでした。<button onClick={() => window.location.reload()}>もう一度ひらく</button></> : 'まちをひらいているよ…'}</div>}
             <div className="wind-card"><span className="wind-icon"><Wind size={25}/></span><div><span className="mini-label">いまの風</span><strong>{windLabel(wind)}</strong></div><span className={`wind-direction ${wind < 0 ? 'reverse' : ''}`}>{wind === 0 ? '—' : <ArrowRight size={25}/>}</span></div>
             <span className="town-name"><span/> こもれびタウン</span>

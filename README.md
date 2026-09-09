@@ -23,3 +23,13 @@
 街の絵は組み込み image_gen で1回生成。プロンプトは ASSET_PROMPT.txt。UIは依存ライブラリのアイコンとコンポーネント。追加の外部フォントは使用しない。
 
 WebMCPは対応ブラウザで状態読み取り・発射・次の配達を登録する。非対応環境では無効。対応検証コンテキストがないため、WebMCP契約の実機確認は未実施。ブラウザの画面・クリック試験と実タブレットでの操作確認は未実施。
+
+## GitHubからの公開
+
+リポジトリ: https://github.com/daiki0807/paper-plane-post
+
+GitHub Pagesは `main` ブランチの `docs/` を配信する構成です。
+変更時は `npm run build:pages` で生成した `docs/` をソースと一緒にコミット・pushします。GitHubが反映します。
+
+通常の `npm run build` は既存のSites向け、`npm run build:pages` はGitHub Pages向けです。
+Pages版はログイン不要の静的ゲームで、サーバー・外部APIキーを必要としません。
